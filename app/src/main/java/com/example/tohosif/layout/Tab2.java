@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RemoteViews;
 
+import com.example.tohosif.recyclerview.MainActivity;
 import com.example.tohosif.recyclerview.R;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -69,16 +70,16 @@ public class Tab2 extends Fragment {
             @Override
             public void onClick(View v) {
 
-//                Intent intent = new Intent(context, MainActivity.class);
-//                PendingIntent pendIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//                notification = new NotificationCompat.Builder(context);
-//                notification.setSmallIcon(R.mipmap.ic_launcher)
-//                        .setAutoCancel(true)
-//                        .setCustomBigContentView(remoteViews)
-//                        .setContentIntent(pendIntent);
-//
-//                nm.notify(uniqueId, notification.build());
+                Intent intent = new Intent(context, MainActivity.class);
+                PendingIntent pendIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                notification = new NotificationCompat.Builder(context);
+                notification.setSmallIcon(R.mipmap.ic_launcher)
+                        .setAutoCancel(true)
+                        .setCustomBigContentView(remoteViews)
+                        .setContentIntent(pendIntent);
+
+                nm.notify(uniqueId, notification.build());
                 context.startService(new Intent(context, MyServices.class));
                 startbtn.setVisibility(View.GONE);
                 stopbtn.setVisibility(View.VISIBLE);

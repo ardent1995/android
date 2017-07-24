@@ -6,5 +6,5 @@ package com.example.tohosif.layout;
 
 public class Information {
     int iconId;
-    int title;
+    String name;
 }

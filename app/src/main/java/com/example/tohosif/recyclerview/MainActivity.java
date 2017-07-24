@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.tohosif.layout.Tab1;
 import com.example.tohosif.layout.Tab2;
+import com.example.tohosif.layout.Tab3;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private DrawerLayout drawerLayout;
@@ -79,42 +80,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
-    class MyPagerAdapter extends FragmentPagerAdapter {
-
-        String[] tabs;
-
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-            tabs = getResources().getStringArray(R.array.tabs);
-        }
-
-        @Override
-        public android.support.v4.app.Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    Tab1 tab1 = new Tab1();
-                    return tab1;
-                case 1:
-                    Tab2 tab2=new Tab2();
-                    return tab2;
-                case 2:
-                    MyFragment myFragment = MyFragment.getInstance(position);
-                    return myFragment;
-            }
-            return null;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return tabs[position];
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-    }
-
     public static class MyFragment extends Fragment {
         private TextView textView;
 
@@ -136,6 +101,45 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 textView.setText("Tab" + bundle.getInt("position"));
             }
             return layout;
+        }
+    }
+
+    class MyPagerAdapter extends FragmentPagerAdapter {
+
+        String[] tabs;
+
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+            tabs = getResources().getStringArray(R.array.tabs);
+        }
+
+        @Override
+        public android.support.v4.app.Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    Tab1 tab1 = new Tab1();
+                    return tab1;
+                case 1:
+                    Tab2 tab2=new Tab2();
+                    return tab2;
+                case 2:
+                    Tab3 tab3 = new Tab3();
+                    return tab3;
+                case 3:
+                    MyFragment myFragment = MyFragment.getInstance(position);
+                    return myFragment;
+            }
+            return null;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabs[position];
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
         }
     }
 }
