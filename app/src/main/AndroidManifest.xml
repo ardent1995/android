@@ -21,12 +21,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <receiver android:name="Button_listener">
+
+        <receiver android:name=".Button_listener">
             <intent-filter>
-                <action android:name="ButtonClicked"/>
+                <action android:name="ButtonClicked" />
             </intent-filter>
         </receiver>
-        <service android:name="com.example.tohosif.layout.MyServices"/>
+
+        <service android:name="com.example.tohosif.layout.MyServices" />
+
+        <activity android:name="com.example.tohosif.layout.ItemDetailsActivity"></activity>
     </application>
 
 </manifest>

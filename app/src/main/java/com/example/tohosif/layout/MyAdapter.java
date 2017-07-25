@@ -1,7 +1,9 @@
 package com.example.tohosif.layout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,21 +13,51 @@ import android.widget.TextView;
 
 import com.example.tohosif.recyclerview.R;
 
-import java.util.Collections;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by Tohosif on 14-07-2017.
  */
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-
-    List<Information> data = Collections.emptyList();
+    List<Information> data = new ArrayList<>();
+    private int[] icons = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
+            R.drawable.img11, R.drawable.img12, R.drawable.img13, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
+            R.drawable.img11, R.drawable.img12, R.drawable.img13, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
+            R.drawable.img11, R.drawable.img12, R.drawable.img13, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
+            R.drawable.img11};
     private LayoutInflater inflater;
+    private Context context;
 
-    public MyAdapter(Context context, List<Information> data) {
+    public MyAdapter(Context context) {
+        this.context = context;
         inflater = LayoutInflater.from(context);       //To get LayoutInflater in a Given Context
-        this.data = data;
+        try {
+            InputStream is = context.getAssets().open("user.json");
+            Scanner scanner = new Scanner(is);
+            StringBuilder builder = new StringBuilder();
+            while (scanner.hasNextLine()) {
+                builder.append(scanner.nextLine());
+            }
+            JSONObject root = new JSONObject(builder.toString());
+            JSONArray users = root.getJSONArray("user");
+            for (int i = 0; i < icons.length; i++) {
+                data.add(new Information(users.getJSONObject(i % 4), icons[i]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -37,10 +69,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Information currentInformation = data.get(position);
-        holder.iv_img.setImageResource(currentInformation.iconId);
-        holder.tx_txt.setText(currentInformation.name);
+        final Information currentInformation = data.get(position);
+        holder.iv_img.setImageResource(currentInformation.getIconId());
+        holder.tx_txt.setText(currentInformation.getFirstName() + " " + currentInformation.getMiddleName() + " " + currentInformation.getLastName());
         holder.tx_txt.setTextColor(Color.RED);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ItemDetailsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", currentInformation);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -56,7 +98,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             super(itemView);
             tx_txt = (TextView) itemView.findViewById(R.id.txt);
             iv_img = (ImageView) itemView.findViewById(R.id.img);
-
         }
     }
 }
