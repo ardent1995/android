@@ -18,8 +18,8 @@ public class ItemDetailsActivity extends AppCompatActivity {
         tv_details = (TextView) findViewById(R.id.tv_details);
 
         try {
-            Information information = (Information) getIntent().getExtras().getSerializable("user");
-            tv_details.setText(information.getDetails());
+            PojoUser pojoUser = (PojoUser) getIntent().getExtras().getSerializable("user");
+            tv_details.setText(pojoUser.getDetails());
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

@@ -64,9 +64,10 @@ public class Tab3 extends Fragment {
 
     private void parseJson(String s) {
         StringBuilder builder = new StringBuilder();
+
         try {
             JSONObject root = new JSONObject(s);
-            JSONArray users = root.getJSONArray("user");
+            JSONArray users = root.getJSONArray("users");
             for (int i = 0; i < users.length(); i++) {
                 JSONObject user = users.getJSONObject(i);
                 builder.append("Name : ")
@@ -81,10 +82,9 @@ public class Tab3 extends Fragment {
                 builder.append("Email id : ").append(user.getString("email_id")).append("\n");
                 builder.append("Phone No. : ").append(user.getString("phone_no.")).append("\n\n\n");
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
         tv_data.setText(builder.toString());
     }
-}
+    }

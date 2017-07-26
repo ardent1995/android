@@ -12,23 +12,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tohosif.recyclerview.R;
+import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.io.InputStreamReader;
 
 /**
  * Created by Tohosif on 14-07-2017.
  */
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    List<Information> data = new ArrayList<>();
+    //    List<Information> data = new ArrayList<>();
+    PojoUsers pojoUsers;
     private int[] icons = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
             R.drawable.img11, R.drawable.img12, R.drawable.img13, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
             R.drawable.img11, R.drawable.img12, R.drawable.img13, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
@@ -40,21 +37,38 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public MyAdapter(Context context) {
         this.context = context;
         inflater = LayoutInflater.from(context);       //To get LayoutInflater in a Given Context
+
+//        try {
+//            InputStream is = context.getAssets().open("user.json");
+//            Scanner scanner = new Scanner(is);
+//            StringBuilder builder = new StringBuilder();
+//            while (scanner.hasNextLine()) {
+//                builder.append(scanner.nextLine());
+//            }
+//            JSONObject root = new JSONObject(builder.toString());
+//            JSONArray users = root.getJSONArray("users");
+//            for (int i = 0; i < icons.length; i++) {
+//                data.add(new Information(users.getJSONObject(i % 4), icons[i]));
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        Gson gson = new Gson();
+        BufferedReader br = null;
         try {
             InputStream is = context.getAssets().open("user.json");
-            Scanner scanner = new Scanner(is);
-            StringBuilder builder = new StringBuilder();
-            while (scanner.hasNextLine()) {
-                builder.append(scanner.nextLine());
-            }
-            JSONObject root = new JSONObject(builder.toString());
-            JSONArray users = root.getJSONArray("user");
-            for (int i = 0; i < icons.length; i++) {
-                data.add(new Information(users.getJSONObject(i % 4), icons[i]));
-            }
+            br = new BufferedReader(new InputStreamReader(is));
+            pojoUsers = gson.fromJson(br, PojoUsers.class);
+
+//            if(pojoUsers !=null){
+//                for(PojoUser pojoUser: pojoUsers.getUsers()){
+//                    Log.d("USER",""+pojoUser);
+//                }
+//            }
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -69,16 +83,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        final Information currentInformation = data.get(position);
-        holder.iv_img.setImageResource(currentInformation.getIconId());
-        holder.tx_txt.setText(currentInformation.getFirstName() + " " + currentInformation.getMiddleName() + " " + currentInformation.getLastName());
+//        final Information currentInformation = data.get(position);
+        final PojoUser pojoUser = pojoUsers.getUsers().get(position % 4);
+        pojoUser.setIconId(icons[position]);
+        holder.iv_img.setImageResource(pojoUser.getIconId());
+        holder.tx_txt.setText(pojoUser.getFirstName() + " " + pojoUser.getMiddleName() + " " + pojoUser.getLastName());
         holder.tx_txt.setTextColor(Color.RED);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ItemDetailsActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("user", currentInformation);
+                bundle.putSerializable("user", pojoUser);
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }
@@ -87,7 +103,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return icons.length;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {

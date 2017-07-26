@@ -1,5 +1,5 @@
 {
-   "user":[
+	"users": [
    {
 	  "first_name":"Md",
       "middle_name":"Tohosif",
@@ -16,7 +16,7 @@
 	  "gender":"Male",
 	  "city":"Bangalore",
 	  "email_id":"ryadav@gmail.com",
-	  "phone_no.":"0000000000"
+	   "phone_no.": "0000000000"
    },
    {
 	  "first_name":"Mr",

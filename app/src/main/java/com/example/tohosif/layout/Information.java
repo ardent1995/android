@@ -15,10 +15,6 @@ public class Information extends User {
         this.iconId = iconId;
     }
 
-    public Information(JSONObject object) {
-        super(object);
-    }
-
     public int getIconId() {
         return iconId;
     }
