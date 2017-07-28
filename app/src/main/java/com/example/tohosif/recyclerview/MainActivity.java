@@ -27,6 +27,7 @@ import com.example.tohosif.layout.Tab2;
 import com.example.tohosif.layout.Tab3;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+    DatabaseHelper myDb;
     private DrawerLayout drawerLayout;
     private ListView listView;
     private String[] myList;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
+
+        myDb = new DatabaseHelper(this);
 
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
