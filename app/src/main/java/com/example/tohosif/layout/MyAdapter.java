@@ -12,12 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tohosif.recyclerview.R;
-import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Tohosif on 14-07-2017.
@@ -25,7 +22,8 @@ import java.io.InputStreamReader;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     //    List<Information> data = new ArrayList<>();
-    PojoUsers pojoUsers;
+//    PojoUsers pojoUsers;
+    List<UserFromDatabase> data = new ArrayList<>();
     private int[] icons = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
             R.drawable.img11, R.drawable.img12, R.drawable.img13, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
             R.drawable.img11, R.drawable.img12, R.drawable.img13, R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4, R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8, R.drawable.img9, R.drawable.img10,
@@ -34,10 +32,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private LayoutInflater inflater;
     private Context context;
 
-    public MyAdapter(Context context) {
+    public MyAdapter(Context context, List<UserFromDatabase> data) {
         this.context = context;
         inflater = LayoutInflater.from(context);       //To get LayoutInflater in a Given Context
-
+        this.data = data;
 //        try {
 //            InputStream is = context.getAssets().open("user.json");
 //            Scanner scanner = new Scanner(is);
@@ -56,21 +54,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 //            e.printStackTrace();
 //        }
 
-        Gson gson = new Gson();
-        BufferedReader br = null;
-        try {
-            InputStream is = context.getAssets().open("user.json");
-            br = new BufferedReader(new InputStreamReader(is));
-            pojoUsers = gson.fromJson(br, PojoUsers.class);
-
-//            if(pojoUsers !=null){
-//                for(PojoUser pojoUser: pojoUsers.getUsers()){
-//                    Log.d("USER",""+pojoUser);
-//                }
-//            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        Gson gson = new Gson();
+//        BufferedReader br = null;
+//        try {
+//            InputStream is = context.getAssets().open("user.json");
+//            br = new BufferedReader(new InputStreamReader(is));
+//            pojoUsers = gson.fromJson(br, PojoUsers.class);
+//
+////            if(pojoUsers !=null){
+////                for(PojoUser pojoUser: pojoUsers.getUsers()){
+////                    Log.d("USER",""+pojoUser);
+////                }
+////            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -84,17 +82,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 //        final Information currentInformation = data.get(position);
-        final PojoUser pojoUser = pojoUsers.getUsers().get(position % 4);
-        pojoUser.setIconId(icons[position]);
-        holder.iv_img.setImageResource(pojoUser.getIconId());
-        holder.tx_txt.setText(pojoUser.getFirstName() + " " + pojoUser.getMiddleName() + " " + pojoUser.getLastName());
+//        final PojoUser pojoUser = pojoUsers.getUsers().get(position % 4);
+        int size = data.size();
+        final UserFromDatabase user = data.get(position % size);
+        user.setIconId(icons[position]);
+        holder.iv_img.setImageResource(user.getIconId());
+        String middleName = "";
+        if (user.getMiddleName() != null) {
+            middleName = user.getMiddleName();
+        }
+        holder.tx_txt.setText(user.getFirstName() + " " + middleName + " " + user.getLastName());
         holder.tx_txt.setTextColor(Color.RED);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ItemDetailsActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("user", pojoUser);
+                bundle.putSerializable("user", user);
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }
