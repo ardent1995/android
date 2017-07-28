@@ -23,9 +23,9 @@ import java.util.List;
  */
 public class Tab1 extends Fragment {
 
+    public DatabaseHelper db;
     private RecyclerView recyclerView;
     private MyAdapter adapter;
-    private DatabaseHelper db;
     private List<UserFromDatabase> data;
     public Tab1() {
         // Required empty public constructor
@@ -52,14 +52,11 @@ public class Tab1 extends Fragment {
     public void fetchData() {
         db = new DatabaseHelper(getActivity());
         try {
-
             db.createDataBase();
             db.openDataBase();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //Take UserFromDatabase object from database and set on List<UserFromDatabase> data
         SQLiteDatabase sd = db.getReadableDatabase();
         Cursor cursor = sd.query("user_table", null, null, null, null, null, null);
         while (cursor.moveToNext()) {
@@ -67,7 +64,7 @@ public class Tab1 extends Fragment {
                     cursor.getString(cursor.getColumnIndex("Last_Name")), cursor.getString(cursor.getColumnIndex("Gender")), cursor.getString(cursor.getColumnIndex("DOB")), cursor.getString(cursor.getColumnIndex("City")),
                     cursor.getString(cursor.getColumnIndex("Email_id")), cursor.getString(cursor.getColumnIndex("Phone_No"))));
         }
-        adapter = new MyAdapter(getActivity(), data);
+        adapter = new MyAdapter(getActivity(), data, db);
         recyclerView.setAdapter(adapter);
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,34 +38,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        Log.d("DATABASE", "Database Created");
         this.context = context;
         DATABASE_PATH = context.getDatabasePath(DATABASE_NAME).toString();
 //        SQLiteDatabase db = this.getWritableDatabase();
     }
 
     public void createDataBase() throws IOException {
-
         boolean dbExist = checkDataBase();
-
         if (dbExist) {
 
         } else {
-
             this.getWritableDatabase();
-
             try {
-
                 copyDataBase();
-
             } catch (IOException e) {
-
                 throw new Error("Error copying database");
-
             }
-
         }
-
     }
 
     private boolean checkDataBase() {
@@ -108,11 +96,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public synchronized void close() {
 
-        if (db != null)
+        if (db != null) {
             db.close();
-
+        }
         super.close();
-
     }
 
     @Override
@@ -125,5 +112,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 //        db.execSQL(SQL_DELETE_TABLE);
 //        onCreate(db);
+    }
+
+    public boolean deleteFromDatabase(int id) {
+        String selection = "Id LIKE ?";
+        String[] selectionArgs = {Integer.toString(id)};
+        db.delete("user_table", selection, selectionArgs);
+        return true;
     }
 }

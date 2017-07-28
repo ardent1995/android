@@ -1,16 +1,20 @@
 package com.example.tohosif.layout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.tohosif.recyclerview.DatabaseHelper;
 import com.example.tohosif.recyclerview.R;
 
 import java.util.ArrayList;
@@ -31,11 +35,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             R.drawable.img11};
     private LayoutInflater inflater;
     private Context context;
+    private DatabaseHelper db;
 
-    public MyAdapter(Context context, List<UserFromDatabase> data) {
+    public MyAdapter(Context context, List<UserFromDatabase> data, DatabaseHelper db) {
         this.context = context;
         inflater = LayoutInflater.from(context);       //To get LayoutInflater in a Given Context
         this.data = data;
+        this.db = db;
+
 //        try {
 //            InputStream is = context.getAssets().open("user.json");
 //            Scanner scanner = new Scanner(is);
@@ -103,6 +110,43 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 context.startActivity(intent);
             }
         });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder myAlert = new AlertDialog.Builder(context);
+                myAlert.setMessage("Do you want to delete this entry?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //delete from database
+                                int id = user.getId();
+                                boolean deletedFromDatabase = db.deleteFromDatabase(id);
+                                //delete from recyclerview
+                                if (deletedFromDatabase) {
+                                    removeitem(user);
+                                }
+                                dialog.dismiss();
+                                Toast.makeText(context, "Entry deleted", Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .setTitle("Confirmation")
+                        .create();
+                myAlert.show();
+                return true;
+            }
+        });
+    }
+
+    private void removeitem(UserFromDatabase user) {
+        int CurrentPosition = data.indexOf(user);
+        data.remove(CurrentPosition);
+        notifyItemRemoved(CurrentPosition);
     }
 
     @Override
