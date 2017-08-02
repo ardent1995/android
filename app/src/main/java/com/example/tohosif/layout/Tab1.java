@@ -24,13 +24,13 @@ import java.util.List;
 public class Tab1 extends Fragment {
 
     public DatabaseHelper db;
+    public MyAdapter adapter;
     private RecyclerView recyclerView;
-    private MyAdapter adapter;
     private List<UserFromDatabase> data;
+
     public Tab1() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

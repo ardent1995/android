@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
+
     }
 
     @Override
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     Tab1 tab1 = new Tab1();
                     return tab1;
                 case 1:
-                    Tab2 tab2=new Tab2();
+                    Tab2 tab2 = new Tab2();
                     return tab2;
                 case 2:
                     Tab3 tab3 = new Tab3();

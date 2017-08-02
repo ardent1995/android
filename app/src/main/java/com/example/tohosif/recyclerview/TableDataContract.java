@@ -12,6 +12,7 @@ public final class TableDataContract {
 
     public static class TableInfo implements BaseColumns {
         public static final String TABLE_NAME = "user_table";
+        public static final String Id = "Id";
         public static final String COL_1 = "first_name";
         public static final String COL_2 = "middle_name";
         public static final String COL_3 = "last_name";

@@ -20,6 +20,7 @@
     <string name="contact_us">Contact Us</string>
     <string name="about_us">About Us</string>
     <string name="next">Next</string>
+    <string name="delete">Delete</string>
     <string name="welcome">Welcome</string>
     <string name="notification_title">This is my Notification</string>
     <string name="notification_text">You are looking at my notification.</string>

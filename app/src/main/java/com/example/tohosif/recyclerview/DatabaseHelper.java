@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 
+import static com.example.tohosif.recyclerview.TableDataContract.TableInfo;
+
 /**
  * Created by Tohosif on 27-07-2017.
  */
@@ -114,10 +116,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        onCreate(db);
     }
 
-    public boolean deleteFromDatabase(int id) {
-        String selection = "Id LIKE ?";
+    public int deleteFromDatabase(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selection = TableInfo.Id + " =?";
         String[] selectionArgs = {Integer.toString(id)};
-        db.delete("user_table", selection, selectionArgs);
-        return true;
+        int deletedRows = db.delete(TableInfo.TABLE_NAME, selection, selectionArgs);
+        return deletedRows;
     }
 }
