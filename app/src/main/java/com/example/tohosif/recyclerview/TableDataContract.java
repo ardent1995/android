@@ -12,13 +12,14 @@ public final class TableDataContract {
 
     public static class TableInfo implements BaseColumns {
         public static final String TABLE_NAME = "user_table";
-        public static final String Id = "Id";
-        public static final String COL_1 = "first_name";
-        public static final String COL_2 = "middle_name";
-        public static final String COL_3 = "last_name";
-        public static final String COL_4 = "gender";
-        public static final String COL_5 = "city";
-        public static final String COL_6 = "email_id";
-        public static final String COL_7 = "phone_no";
+        public static final String ID = "Id";
+        public static final String FIRST_NAME = "First_Name";
+        public static final String MIDDLE_NAME = "Middle_Name";
+        public static final String LAST_NAME = "Last_Name";
+        public static final String GENDER = "Gender";
+        public static final String DOB = "DOB";
+        public static final String CITY = "City";
+        public static final String EMAIL_ID = "Email_id";
+        public static final String PHONE_NO = "Phone_No";
     }
 }

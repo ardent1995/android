@@ -1,9 +1,11 @@
 package com.example.tohosif.layout;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +19,8 @@ import com.example.tohosif.recyclerview.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.tohosif.recyclerview.TableDataContract.TableInfo;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +31,7 @@ public class Tab1 extends Fragment {
     public MyAdapter adapter;
     private RecyclerView recyclerView;
     private List<UserFromDatabase> data;
+    private FloatingActionButton fab;
 
     public Tab1() {
         // Required empty public constructor
@@ -43,6 +48,14 @@ public class Tab1 extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         data = new ArrayList<>();
         fetchData();
+        fab = (FloatingActionButton) layout.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent in = new Intent(getActivity(), registerActivity.class);
+                startActivity(in);
+            }
+        });
 //        DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(this,layoutManager.getOrientation());
 //        recyclerView.addItemDecoration(dividerItemDecoration);
 
@@ -58,11 +71,11 @@ public class Tab1 extends Fragment {
             e.printStackTrace();
         }
         SQLiteDatabase sd = db.getReadableDatabase();
-        Cursor cursor = sd.query("user_table", null, null, null, null, null, null);
+        Cursor cursor = sd.query(TableInfo.TABLE_NAME, null, null, null, null, null, null);
         while (cursor.moveToNext()) {
-            data.add(new UserFromDatabase(cursor.getInt(cursor.getColumnIndex("Id")), cursor.getString(cursor.getColumnIndex("First_Name")), cursor.getString(cursor.getColumnIndex("Middle_Name")),
-                    cursor.getString(cursor.getColumnIndex("Last_Name")), cursor.getString(cursor.getColumnIndex("Gender")), cursor.getString(cursor.getColumnIndex("DOB")), cursor.getString(cursor.getColumnIndex("City")),
-                    cursor.getString(cursor.getColumnIndex("Email_id")), cursor.getString(cursor.getColumnIndex("Phone_No"))));
+            data.add(new UserFromDatabase(cursor.getInt(cursor.getColumnIndex(TableInfo.ID)), cursor.getString(cursor.getColumnIndex(TableInfo.FIRST_NAME)), cursor.getString(cursor.getColumnIndex(TableInfo.MIDDLE_NAME)),
+                    cursor.getString(cursor.getColumnIndex(TableInfo.LAST_NAME)), cursor.getString(cursor.getColumnIndex(TableInfo.GENDER)), cursor.getString(cursor.getColumnIndex(TableInfo.DOB)), cursor.getString(cursor.getColumnIndex(TableInfo.CITY)),
+                    cursor.getString(cursor.getColumnIndex(TableInfo.EMAIL_ID)), cursor.getString(cursor.getColumnIndex(TableInfo.PHONE_NO))));
         }
         adapter = new MyAdapter(getActivity(), data, db);
         recyclerView.setAdapter(adapter);

@@ -1,14 +1,14 @@
 package com.example.tohosif.layout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,8 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tohosif.recyclerview.DatabaseHelper;
+import com.example.tohosif.recyclerview.MainActivity;
 import com.example.tohosif.recyclerview.R;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private LayoutInflater inflater;
     private Context context;
     private DatabaseHelper db;
-
+    private ActionMode actionMode;
     private boolean multiSelect = false;
     private ArrayList<UserFromDatabase> selectedItems = new ArrayList<>();
     private ActionMode.Callback actionModeCallbacks = new ActionMode.Callback() {
@@ -53,55 +55,56 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            mode.setTitle(selectedItems.size() + " Selected");
             return false;
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
 
-            for (UserFromDatabase user : selectedItems) {
+            /*for (UserFromDatabase user : selectedItems) {
                 data.remove(user);
+            }*/
+
+
+            AlertDialog.Builder myAlert = new AlertDialog.Builder(context);
+            if (selectedItems.size() == 1) {
+                myAlert.setMessage("Do you want to delete that entry?");
+            } else {
+                myAlert.setMessage("Do you want to delete these " + selectedItems.size() + " entries?");
             }
+            myAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //delete from database
+                    for (UserFromDatabase user : selectedItems) {
+                        int id = user.getId();
+                        int rowsdeletedFromDatabase = db.deleteFromDatabase(id);
+                        //delete from recyclerview
+                        if (rowsdeletedFromDatabase > 0) {
+                            removeitem(user);
+                        }
+                    }
+                    Toast.makeText(context, selectedItems.size() + " entry deleted", Toast.LENGTH_LONG).show();
+                    mode.finish();
+                    dialog.dismiss();
+                }
+            })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setTitle("Confirmation")
+                    .create();
+            myAlert.show();
 
-            Log.d("SIZE", "" + selectedItems.size());
-
-//            AlertDialog.Builder myAlert = new AlertDialog.Builder(context);
-//                myAlert.setMessage("Do you want to delete these entry?")
-//                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                //delete from database
-//                                    for(UserFromDatabase user: selectedItems){
-//                                        data.remove(user);
-//
-////                                        int id = user.getId();
-////                                        int rowsdeletedFromDatabase = db.deleteFromDatabase(id);
-//                                    //delete from recyclerview
-////                                    if (rowsdeletedFromDatabase>0) {
-////                                        removeitem(user);
-////                                    }
-//                                }
-//                                dialog.dismiss();
-//                                Toast.makeText(context, selectedItems.size()+" entry deleted", Toast.LENGTH_LONG).show();
-//                            }
-//                        })
-//                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.cancel();
-//                            }
-//                        })
-//                        .setTitle("Confirmation")
-//                        .create();
-//                myAlert.show();
-
-            mode.finish();
             return true;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            actionMode = null;
             multiSelect = false;
             selectedItems.clear();
             notifyDataSetChanged();
@@ -172,54 +175,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.tx_txt.setText(user.getFirstName() + " " + middleName + " " + user.getLastName());
         holder.tx_txt.setTextColor(Color.RED);
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                ((AppCompatActivity) v.getContext()).startSupportActionMode(actionModeCallbacks);
-                holder.selectItem(user);
-                return true;
-            }
-        });
         holder.update(user);
-
-//        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//                AlertDialog.Builder myAlert = new AlertDialog.Builder(context);
-//                myAlert.setMessage("Do you want to delete this entry?")
-//                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                //delete from database
-//                                int id = user.getId();
-//                                int rowsdeletedFromDatabase = db.deleteFromDatabase(id);
-//                                //delete from recyclerview
-//                                if (rowsdeletedFromDatabase>0) {
-//                                    removeitem(user,position);
-//                                }
-//                                dialog.dismiss();
-//                                Toast.makeText(context, "Entry deleted", Toast.LENGTH_LONG).show();
-//                            }
-//                        })
-//                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.cancel();
-//                            }
-//                        })
-//                        .setTitle("Confirmation")
-//                        .create();
-//                myAlert.show();
-//                return true;
-//            }
-//        });
     }
 
-//    private void removeitem(UserFromDatabase user) {
-//        int CurrentPosition = data.indexOf(user);
-//        data.remove(CurrentPosition);
-//        notifyItemRemoved(CurrentPosition);
-//    }
+    private void removeitem(UserFromDatabase user) {
+        int CurrentPosition = data.indexOf(user);
+        data.remove(CurrentPosition);
+        notifyItemRemoved(CurrentPosition);
+    }
 
     @Override
     public int getItemCount() {
@@ -239,13 +202,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
 
         void selectItem(UserFromDatabase user) {
-            if (multiSelect) {
-                if (selectedItems.contains(user)) {
-                    selectedItems.remove(user);
-                    cardView.setBackgroundColor(Color.WHITE);
-                } else {
-                    selectedItems.add(user);
-                    cardView.setBackgroundColor(Color.LTGRAY);
+            if (actionMode == null) {
+                actionMode = ((MainActivity) context).startSupportActionMode(actionModeCallbacks);
+            }
+            if (actionMode != null) {
+                if (multiSelect) {
+                    if (selectedItems.contains(user)) {
+                        selectedItems.remove(user);
+                        cardView.setBackgroundColor(Color.WHITE);
+                        actionMode.setTitle(selectedItems.size() + " Selected");
+                    } else {
+                        selectedItems.add(user);
+                        cardView.setBackgroundColor(Color.LTGRAY);
+                        actionMode.setTitle(selectedItems.size() + " Selected");
+                    }
                 }
             }
         }
@@ -256,6 +226,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             } else {
                 cardView.setBackgroundColor(Color.WHITE);
             }
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    selectItem(user);
+                    return true;
+                }
+            });
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

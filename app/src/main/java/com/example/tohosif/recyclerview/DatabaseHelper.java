@@ -1,5 +1,6 @@
 package com.example.tohosif.recyclerview;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -19,7 +20,7 @@ import static com.example.tohosif.recyclerview.TableDataContract.TableInfo;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "users.sqlite";
+    private static final String DATABASE_NAME = "users.db";
     private static final int DATABASE_VERSION = 1;
     private static String DATABASE_PATH = "";
     private SQLiteDatabase db;
@@ -118,9 +119,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int deleteFromDatabase(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String selection = TableInfo.Id + " =?";
+        String selection = TableInfo.ID + " =?";
         String[] selectionArgs = {Integer.toString(id)};
         int deletedRows = db.delete(TableInfo.TABLE_NAME, selection, selectionArgs);
         return deletedRows;
+    }
+
+    public boolean insertData(String firstName, String middleName, String lastName, String gender, String dob, String city, String emailId, String phoneNo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TableInfo.FIRST_NAME, firstName);
+        contentValues.put(TableInfo.MIDDLE_NAME, middleName);
+        contentValues.put(TableInfo.LAST_NAME, lastName);
+        contentValues.put(TableInfo.GENDER, gender);
+        contentValues.put(TableInfo.DOB, dob);
+        contentValues.put(TableInfo.CITY, city);
+        contentValues.put(TableInfo.EMAIL_ID, emailId);
+        contentValues.put(TableInfo.PHONE_NO, phoneNo);
+        long result = db.insert(TableInfo.TABLE_NAME, TableInfo.MIDDLE_NAME, contentValues);
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

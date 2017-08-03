@@ -25,10 +25,32 @@
     <string name="notification_title">This is my Notification</string>
     <string name="notification_text">You are looking at my notification.</string>
     <string name="button">Button</string>
+    <string name="firstName">First Name*</string>
+    <string name="lastName">Last Name*</string>
+    <string name="mail">E-mail id*</string>
+    <string name="mob">Mobile Number*</string>
+    <string name="gender">Gender*</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="city">City*</string>
+    <string name="register">Register</string>
+    <string name="middleName">Middle Name</string>
+    <string name="dob">Date Of Birth*</string>
+    <string name="setDate">Set Date</string>
     <string-array name="tabs">
         <item>TAB 1</item>
         <item>TAB 2</item>
         <item>TAB 3</item>
         <item>TAB 4</item>
+    </string-array>
+    <string-array name="cityArray">
+        <item>Mumbai</item>
+        <item>Chennai</item>
+        <item>Delhi</item>
+        <item>Kolkata</item>
+        <item>Hyderabad</item>
+        <item>Bangalore</item>
+        <item>Pune</item>
+        <item>Ahmedabad</item>
     </string-array>
 </resources>
