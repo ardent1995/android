@@ -31,7 +31,11 @@
         <service android:name="com.example.tohosif.layout.MyServices" />
 
         <activity android:name="com.example.tohosif.layout.ItemDetailsActivity" />
-        <activity android:name="com.example.tohosif.layout.registerActivity"></activity>
+        <activity android:name="com.example.tohosif.layout.RegisterActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -143,4 +143,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
         }
     }
+
+    public boolean updateData(int id, String firstName, String middleName, String lastName, String gender, String dob, String city, String emailId, String phoneNo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TableInfo.ID, id);
+        contentValues.put(TableInfo.FIRST_NAME, firstName);
+        contentValues.put(TableInfo.MIDDLE_NAME, middleName);
+        contentValues.put(TableInfo.LAST_NAME, lastName);
+        contentValues.put(TableInfo.GENDER, gender);
+        contentValues.put(TableInfo.DOB, dob);
+        contentValues.put(TableInfo.CITY, city);
+        contentValues.put(TableInfo.EMAIL_ID, emailId);
+        contentValues.put(TableInfo.PHONE_NO, phoneNo);
+        String selection = TableInfo.ID + " =?";
+        String[] selectionArgs = {Integer.toString(id)};
+        db.update(TableInfo.TABLE_NAME, contentValues, selection, selectionArgs);
+        return true;
+    }
 }

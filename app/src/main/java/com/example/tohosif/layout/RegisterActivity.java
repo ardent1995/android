@@ -2,15 +2,18 @@ package com.example.tohosif.layout;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Patterns;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,21 +27,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tohosif.recyclerview.DatabaseHelper;
-import com.example.tohosif.recyclerview.MainActivity;
 import com.example.tohosif.recyclerview.R;
 
 import java.util.Calendar;
 
-public class registerActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class RegisterActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     DatabaseHelper myDB;
     String firstName, middleName, lastName, emailId, mobileNo, dob, gender, city;
+    boolean editable = false;
     private Calendar calendar;
     private TextView tv_dob;
-    private Button registerButton;
+    private Button registerButton, updateButton;
     private ImageButton setDateButton;
     private int year, month, day;
     private EditText et_firstName, et_middleName, et_lastName, et_emailId, et_moblileNo;
-    private RadioButton radioGenButton;
+    private RadioButton radioGenButton, radioFemaleButton;
     private Spinner spinner;
     private RadioGroup radioGrp;
     private DatePickerDialog.OnDateSetListener myDateListener = new DatePickerDialog.OnDateSetListener() {
@@ -50,11 +53,19 @@ public class registerActivity extends AppCompatActivity implements AdapterView.O
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         myDB = new DatabaseHelper(this);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         tv_dob = (TextView) findViewById(R.id.tv_dob);
 
@@ -87,6 +98,8 @@ public class registerActivity extends AppCompatActivity implements AdapterView.O
 
         radioGenButton = (RadioButton) findViewById(R.id.rbMale);
 
+        radioFemaleButton = (RadioButton) findViewById(R.id.rbFemale);
+
         radioGrp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
@@ -97,23 +110,81 @@ public class registerActivity extends AppCompatActivity implements AdapterView.O
 
         spinner = (Spinner) findViewById(R.id.spinner);
 
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.cityArray,
+        ArrayAdapter spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.cityArray,
                 android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(this);
 
 
-        registerButton = (Button) findViewById(R.id.btn);
+        registerButton = (Button) findViewById(R.id.registerbtn);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initialize();
+                getData();
                 if (validate()) {
                     confirmation();
                 }
             }
         });
 
+        updateButton = (Button) findViewById(R.id.updatebtn);
+        updateButton.setVisibility(View.GONE);
+
+        try {
+            final UserFromDatabase userFromDatabase = (UserFromDatabase) getIntent().getExtras().getSerializable("user");
+
+            et_firstName.setText(userFromDatabase.getFirstName());
+            et_firstName.setEnabled(false);
+
+            et_middleName.setText(userFromDatabase.getMiddleName());
+            et_middleName.setEnabled(false);
+
+            et_lastName.setText(userFromDatabase.getLastName());
+            et_lastName.setEnabled(false);
+
+            et_emailId.setText(userFromDatabase.getEmailId());
+            et_emailId.setEnabled(false);
+
+            et_moblileNo.setText(userFromDatabase.getPhoneNo());
+            et_moblileNo.setEnabled(false);
+
+            tv_dob.setText(userFromDatabase.getDOB());
+            setDateButton.setEnabled(false);
+
+            if (userFromDatabase.getGender() == "Male") {
+                radioGenButton.isChecked();
+                radioGenButton.setEnabled(false);
+            } else {
+                radioFemaleButton.isChecked();
+                radioFemaleButton.setEnabled(false);
+            }
+
+            int spinnerposition = spinnerAdapter.getPosition(userFromDatabase.getCity());
+            spinner.setSelection(spinnerposition);
+            spinner.setEnabled(false);
+
+            registerButton.setVisibility(View.GONE);
+            editable = true;
+
+            updateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getData();
+                    if (validate()) {
+                        boolean isUpdated = myDB.updateData(userFromDatabase.getId(), firstName, middleName, lastName, gender, dob, city, emailId, mobileNo);
+                        if (isUpdated) {
+                            Toast.makeText(RegisterActivity.this, "Data updated successfully.", Toast.LENGTH_LONG).show();
+                            setResult(2);
+                            finish();
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "Failed to update data.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+        }
     }
 
     private boolean validate() {
@@ -130,8 +201,8 @@ public class registerActivity extends AppCompatActivity implements AdapterView.O
             et_emailId.setError("Enter valid email address.");
             valid = false;
         }
-        if (mobileNo.isEmpty()) {
-            et_moblileNo.setError("Mobile Number can not be empty.");
+        if (mobileNo.isEmpty() || mobileNo.length() != 10) {
+            et_moblileNo.setError("Enter valid mobile number.");
             valid = false;
         }
         return valid;
@@ -139,14 +210,16 @@ public class registerActivity extends AppCompatActivity implements AdapterView.O
 
     private void confirmation() {
         AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
-        myAlert.setMessage("First Name: " + firstName + "\n" + "Middle Name: " + middleName + "\n" + "Last Name: " + lastName + "\n" + "Email id: " + emailId + "\n" + "Mobile No:" + "+91" + mobileNo + "\n"
+        myAlert.setMessage("First Name: " + firstName + "\n" + "Middle Name: " + middleName + "\n" + "Last Name: " + lastName + "\n" + "Email id: " + emailId + "\n" + "Mobile No:" + mobileNo + "\n"
                 + "DOB: " + dob + "\n" + "Gender: " + gender + "\n" + "City: " + city)
                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        boolean isInserted = myDB.insertData(firstName, middleName, lastName, gender, dob, city, emailId, "+91" + mobileNo);
+                        boolean isInserted = myDB.insertData(firstName, middleName, lastName, gender, dob, city, emailId, mobileNo);
                         showToast(isInserted);
                         dialog.dismiss();
+                        setResult(1);
+                        finish();
                     }
                 })
                 .setNegativeButton("Modify", new DialogInterface.OnClickListener() {
@@ -169,7 +242,7 @@ public class registerActivity extends AppCompatActivity implements AdapterView.O
         }
     }
 
-    private void initialize() {
+    private void getData() {
         firstName = et_firstName.getText().toString().trim();
         middleName = et_middleName.getText().toString().trim();
         lastName = et_lastName.getText().toString().trim();
@@ -191,13 +264,10 @@ public class registerActivity extends AppCompatActivity implements AdapterView.O
 
     private void showDate(int year, int month, int day) {
         tv_dob.setText(new StringBuilder().append(day).append("/").append(month).append("/").append(year));
-//        Log.d("Date",tv_dob.getText().toString());
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        TextView myText = (TextView) view;
-        Toast.makeText(this, "You selected " + myText.getText(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -206,12 +276,57 @@ public class registerActivity extends AppCompatActivity implements AdapterView.O
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_register, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (!editable) {
+            menu.findItem(R.id.edit).setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+        } else if (id == R.id.edit) {
+            et_firstName.setEnabled(true);
+            et_middleName.setEnabled(true);
+            et_lastName.setEnabled(true);
+            et_emailId.setEnabled(true);
+            et_moblileNo.setEnabled(true);
+            setDateButton.setEnabled(true);
+            radioGenButton.setEnabled(true);
+            radioFemaleButton.setEnabled(true);
+            spinner.setEnabled(true);
+            updateButton.setVisibility(View.VISIBLE);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        Fragment currentFragment = (new MainActivity()).getFragmentManager().findFragmentById(R.id.mainContent);
-        FragmentTransaction fragTransaction = (new MainActivity()).getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Do you want to exit?")
+                .setTitle("Caution!!!")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        alert.show();
     }
 }

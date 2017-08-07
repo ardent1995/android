@@ -2,9 +2,7 @@ package com.example.tohosif.layout;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
@@ -44,6 +42,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private ActionMode actionMode;
     private boolean multiSelect = false;
     private ArrayList<UserFromDatabase> selectedItems = new ArrayList<>();
+    private CallbackInterface mCallback;
     private ActionMode.Callback actionModeCallbacks = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -110,13 +109,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             notifyDataSetChanged();
         }
     };
-
-
     public MyAdapter(Context context, List<UserFromDatabase> data, DatabaseHelper db) {
         this.context = context;
         inflater = LayoutInflater.from(context);       //To get LayoutInflater in a Given Context
         this.data = data;
         this.db = db;
+
+        try {
+            mCallback = (CallbackInterface) context;
+        } catch (ClassCastException e) {
+
+        }
 
 //        try {
 //            InputStream is = context.getAssets().open("user.json");
@@ -189,6 +192,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return data.size();
     }
 
+    public interface CallbackInterface {
+        void onHandleSelection(UserFromDatabase user);
+    }
+
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tx_txt;
         ImageView iv_img;
@@ -237,11 +244,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 @Override
                 public void onClick(View view) {
                     if (!multiSelect) {
-                        Intent intent = new Intent(context, ItemDetailsActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("user", user);
-                        intent.putExtras(bundle);
-                        context.startActivity(intent);
+//                        Intent intent = new Intent(context, ItemDetailsActivity.class);
+//                        Bundle bundle = new Bundle();
+//                        bundle.putSerializable("user", user);
+//                        intent.putExtras(bundle);
+//                        context.startActivity(intent);
+                        if (mCallback != null) {
+                            mCallback.onHandleSelection(user);
+                        }
+//                        Intent intent = new Intent(context,RegisterActivity.class);
+//                        Bundle bundle = new Bundle();
+//                        bundle.putSerializable("user",user);
+//                        intent.putExtras(bundle);
+//                        context.startActivity(intent);
                     } else {
                         selectItem(user);
                     }

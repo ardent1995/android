@@ -29,8 +29,8 @@ public class Tab1 extends Fragment {
 
     public DatabaseHelper db;
     public MyAdapter adapter;
+    public List<UserFromDatabase> data;
     private RecyclerView recyclerView;
-    private List<UserFromDatabase> data;
     private FloatingActionButton fab;
 
     public Tab1() {
@@ -42,20 +42,24 @@ public class Tab1 extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_tab1, container, false);
+
         recyclerView = (RecyclerView) layout.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+
         data = new ArrayList<>();
         fetchData();
+
         fab = (FloatingActionButton) layout.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent in = new Intent(getActivity(), registerActivity.class);
-                startActivity(in);
+                Intent in = new Intent(getActivity(), RegisterActivity.class);
+                startActivityForResult(in, 1);
             }
         });
+
 //        DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(this,layoutManager.getOrientation());
 //        recyclerView.addItemDecoration(dividerItemDecoration);
 
@@ -79,5 +83,15 @@ public class Tab1 extends Fragment {
         }
         adapter = new MyAdapter(getActivity(), data, db);
         recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            this.data.clear();
+            fetchData();
+        }
     }
 }

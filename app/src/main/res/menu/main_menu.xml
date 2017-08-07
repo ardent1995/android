@@ -11,9 +11,9 @@
         android:id="@+id/about_us"
         android:title="@string/about_us" />
     <item android:id="@+id/navigate"
-        android:title="@string/next"
+        android:icon="@mipmap/ic_next"
         android:orderInCategory="200"
-        android:icon="@drawable/ic_next"
+        android:title="@string/next"
         app:showAsAction="always" />
 
 </menu>

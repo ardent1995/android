@@ -22,11 +22,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tohosif.layout.MyAdapter;
+import com.example.tohosif.layout.RegisterActivity;
 import com.example.tohosif.layout.Tab1;
 import com.example.tohosif.layout.Tab2;
 import com.example.tohosif.layout.Tab3;
+import com.example.tohosif.layout.UserFromDatabase;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, MyAdapter.CallbackInterface {
     DatabaseHelper myDb;
     private DrawerLayout drawerLayout;
     private ListView listView;
@@ -64,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //view.setBackgroundColor(Color.RED);
         Toast.makeText(this, myList[position] + " was selected", Toast.LENGTH_LONG).show();
     }
 
@@ -82,6 +86,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Toast.makeText(this, item.getTitle(), Toast.LENGTH_LONG).show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onHandleSelection(UserFromDatabase user) {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", user);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 2);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2) {
+            Tab1 tab1 = new Tab1();
+            tab1.data = new ArrayList<>();
+            tab1.fetchData();
+        }
     }
 
     public static class MyFragment extends Fragment {
@@ -146,4 +169,5 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             return 4;
         }
     }
+
 }

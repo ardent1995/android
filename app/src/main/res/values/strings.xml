@@ -28,7 +28,7 @@
     <string name="firstName">First Name*</string>
     <string name="lastName">Last Name*</string>
     <string name="mail">E-mail id*</string>
-    <string name="mob">Mobile Number*</string>
+    <string name="mob">Mobile Number(+91)*</string>
     <string name="gender">Gender*</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
@@ -37,6 +37,8 @@
     <string name="middleName">Middle Name</string>
     <string name="dob">Date Of Birth*</string>
     <string name="setDate">Set Date</string>
+    <string name="edit">Edit</string>
+    <string name="update">Update</string>
     <string-array name="tabs">
         <item>TAB 1</item>
         <item>TAB 2</item>
