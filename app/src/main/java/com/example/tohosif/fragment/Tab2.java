@@ -1,4 +1,4 @@
-package com.example.tohosif.layout;
+package com.example.tohosif.fragment;
 
 
 import android.app.ActivityManager;

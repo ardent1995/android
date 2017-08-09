@@ -1,4 +1,4 @@
-package com.example.tohosif.layout;
+package com.example.tohosif.model;
 
 import org.json.JSONObject;
 

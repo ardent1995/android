@@ -1,6 +1,5 @@
-package com.example.tohosif.recyclerview;
+package com.example.tohosif.db;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -11,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
-
-import static com.example.tohosif.recyclerview.TableDataContract.TableInfo;
 
 /**
  * Created by Tohosif on 27-07-2017.
@@ -117,48 +114,4 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        onCreate(db);
     }
 
-    public int deleteFromDatabase(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String selection = TableInfo.ID + " =?";
-        String[] selectionArgs = {Integer.toString(id)};
-        int deletedRows = db.delete(TableInfo.TABLE_NAME, selection, selectionArgs);
-        return deletedRows;
-    }
-
-    public boolean insertData(String firstName, String middleName, String lastName, String gender, String dob, String city, String emailId, String phoneNo) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TableInfo.FIRST_NAME, firstName);
-        contentValues.put(TableInfo.MIDDLE_NAME, middleName);
-        contentValues.put(TableInfo.LAST_NAME, lastName);
-        contentValues.put(TableInfo.GENDER, gender);
-        contentValues.put(TableInfo.DOB, dob);
-        contentValues.put(TableInfo.CITY, city);
-        contentValues.put(TableInfo.EMAIL_ID, emailId);
-        contentValues.put(TableInfo.PHONE_NO, phoneNo);
-        long result = db.insert(TableInfo.TABLE_NAME, TableInfo.MIDDLE_NAME, contentValues);
-        if (result == -1) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public boolean updateData(int id, String firstName, String middleName, String lastName, String gender, String dob, String city, String emailId, String phoneNo) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TableInfo.ID, id);
-        contentValues.put(TableInfo.FIRST_NAME, firstName);
-        contentValues.put(TableInfo.MIDDLE_NAME, middleName);
-        contentValues.put(TableInfo.LAST_NAME, lastName);
-        contentValues.put(TableInfo.GENDER, gender);
-        contentValues.put(TableInfo.DOB, dob);
-        contentValues.put(TableInfo.CITY, city);
-        contentValues.put(TableInfo.EMAIL_ID, emailId);
-        contentValues.put(TableInfo.PHONE_NO, phoneNo);
-        String selection = TableInfo.ID + " =?";
-        String[] selectionArgs = {Integer.toString(id)};
-        db.update(TableInfo.TABLE_NAME, contentValues, selection, selectionArgs);
-        return true;
-    }
 }

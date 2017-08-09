@@ -1,11 +1,10 @@
-package com.example.tohosif.layout;
+package com.example.tohosif.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,7 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tohosif.recyclerview.DatabaseHelper;
+import com.example.tohosif.db.UserTable;
+import com.example.tohosif.model.UserFromDatabase;
 import com.example.tohosif.recyclerview.MainActivity;
 import com.example.tohosif.recyclerview.R;
 
@@ -38,7 +38,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             R.drawable.img11};
     private LayoutInflater inflater;
     private Context context;
-    private DatabaseHelper db;
+    private UserTable userTable;
     private ActionMode actionMode;
     private boolean multiSelect = false;
     private ArrayList<UserFromDatabase> selectedItems = new ArrayList<>();
@@ -76,8 +76,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 public void onClick(DialogInterface dialog, int which) {
                     //delete from database
                     for (UserFromDatabase user : selectedItems) {
-                        int id = user.getId();
-                        int rowsdeletedFromDatabase = db.deleteFromDatabase(id);
+                        int rowsdeletedFromDatabase = userTable.deleteFromDatabase(user);
                         //delete from recyclerview
                         if (rowsdeletedFromDatabase > 0) {
                             removeitem(user);
@@ -109,11 +108,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             notifyDataSetChanged();
         }
     };
-    public MyAdapter(Context context, List<UserFromDatabase> data, DatabaseHelper db) {
+
+    public MyAdapter(Context context, List<UserFromDatabase> data, UserTable userTable) {
         this.context = context;
         inflater = LayoutInflater.from(context);       //To get LayoutInflater in a Given Context
         this.data = data;
-        this.db = db;
+        this.userTable = userTable;
 
         try {
             mCallback = (CallbackInterface) context;
@@ -199,13 +199,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tx_txt;
         ImageView iv_img;
-        CardView cardView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             tx_txt = (TextView) itemView.findViewById(R.id.txt);
             iv_img = (ImageView) itemView.findViewById(R.id.img);
-            cardView = (CardView) itemView.findViewById(R.id.card_view);
         }
 
         void selectItem(UserFromDatabase user) {
@@ -216,11 +214,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 if (multiSelect) {
                     if (selectedItems.contains(user)) {
                         selectedItems.remove(user);
-                        cardView.setBackgroundColor(Color.WHITE);
+                        itemView.setBackgroundResource(R.drawable.recycler_view_item);
                         actionMode.setTitle(selectedItems.size() + " Selected");
                     } else {
                         selectedItems.add(user);
-                        cardView.setBackgroundColor(Color.LTGRAY);
+                        itemView.setBackgroundColor(Color.LTGRAY);
                         actionMode.setTitle(selectedItems.size() + " Selected");
                     }
                 }
@@ -229,9 +227,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         void update(final UserFromDatabase user) {
             if (selectedItems.contains(user)) {
-                cardView.setBackgroundColor(Color.LTGRAY);
+                itemView.setBackgroundColor(Color.LTGRAY);
             } else {
-                cardView.setBackgroundColor(Color.WHITE);
+                itemView.setBackgroundResource(R.drawable.recycler_view_item);
             }
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -252,7 +250,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         if (mCallback != null) {
                             mCallback.onHandleSelection(user);
                         }
-//                        Intent intent = new Intent(context,RegisterActivity.class);
+//                        Intent intent = new Intent(context,RegisterAndUpdateActivity.class);
 //                        Bundle bundle = new Bundle();
 //                        bundle.putSerializable("user",user);
 //                        intent.putExtras(bundle);

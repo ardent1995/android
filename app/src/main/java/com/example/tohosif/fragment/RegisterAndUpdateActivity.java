@@ -1,4 +1,4 @@
-package com.example.tohosif.layout;
+package com.example.tohosif.fragment;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -26,13 +26,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tohosif.recyclerview.DatabaseHelper;
+import com.example.tohosif.db.DatabaseHelper;
+import com.example.tohosif.db.UserTable;
+import com.example.tohosif.model.UserFromDatabase;
 import com.example.tohosif.recyclerview.R;
 
 import java.util.Calendar;
 
-public class RegisterActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class RegisterAndUpdateActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     DatabaseHelper myDB;
+    UserTable userTable;
     String firstName, middleName, lastName, emailId, mobileNo, dob, gender, city;
     boolean editable = false;
     private Calendar calendar;
@@ -41,11 +44,11 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     private ImageButton setDateButton;
     private int year, month, day;
     private EditText et_firstName, et_middleName, et_lastName, et_emailId, et_moblileNo;
-    private RadioButton radioGenButton, radioFemaleButton;
+    private RadioButton radioGenButton, radioFemaleButton, radioMaleButton;
     private Spinner spinner;
     private RadioGroup radioGrp;
-    private DatePickerDialog.OnDateSetListener myDateListener = new DatePickerDialog.OnDateSetListener() {
 
+    private DatePickerDialog.OnDateSetListener myDateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             showDate(year, month + 1, dayOfMonth);
@@ -55,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_register_update);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
@@ -64,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         myDB = new DatabaseHelper(this);
+        userTable = new UserTable(myDB);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -99,6 +103,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         radioGenButton = (RadioButton) findViewById(R.id.rbMale);
 
         radioFemaleButton = (RadioButton) findViewById(R.id.rbFemale);
+        radioMaleButton = (RadioButton) findViewById(R.id.rbMale);
 
         radioGrp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -148,15 +153,22 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
             et_moblileNo.setText(userFromDatabase.getPhoneNo());
             et_moblileNo.setEnabled(false);
 
-            tv_dob.setText(userFromDatabase.getDOB());
+            tv_dob.setText(userFromDatabase.getDob());
+
+            String[] values = userFromDatabase.getDob().split("/");
+            day = Integer.parseInt(values[0]);
+            month = (Integer.parseInt(values[1])) - 1;
+            year = Integer.parseInt(values[2]);
+            calendar.set(year, month, day);
+
             setDateButton.setEnabled(false);
 
-            if (userFromDatabase.getGender() == "Male") {
-                radioGenButton.isChecked();
-                radioGenButton.setEnabled(false);
-            } else {
-                radioFemaleButton.isChecked();
+            if (userFromDatabase.getGender().equals(new String("Male"))) {
+                radioMaleButton.setChecked(true);
                 radioFemaleButton.setEnabled(false);
+            } else {
+                radioFemaleButton.setChecked(true);
+                radioMaleButton.setEnabled(false);
             }
 
             int spinnerposition = spinnerAdapter.getPosition(userFromDatabase.getCity());
@@ -171,13 +183,23 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                 public void onClick(View v) {
                     getData();
                     if (validate()) {
-                        boolean isUpdated = myDB.updateData(userFromDatabase.getId(), firstName, middleName, lastName, gender, dob, city, emailId, mobileNo);
+                        UserFromDatabase user = new UserFromDatabase();
+                        user.setId(userFromDatabase.getId());
+                        user.setFirstName(firstName);
+                        user.setMiddleName(middleName);
+                        user.setLastName(lastName);
+                        user.setGender(gender);
+                        user.setDob(dob);
+                        user.setCity(city);
+                        user.setEmailId(emailId);
+                        user.setPhoneNo(mobileNo);
+                        boolean isUpdated = userTable.updateData(user);
                         if (isUpdated) {
-                            Toast.makeText(RegisterActivity.this, "Data updated successfully.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterAndUpdateActivity.this, "Data updated successfully.", Toast.LENGTH_LONG).show();
                             setResult(2);
                             finish();
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Failed to update data.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterAndUpdateActivity.this, "Failed to update data.", Toast.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -215,7 +237,16 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        boolean isInserted = myDB.insertData(firstName, middleName, lastName, gender, dob, city, emailId, mobileNo);
+                        UserFromDatabase user = new UserFromDatabase();
+                        user.setFirstName(firstName);
+                        user.setMiddleName(middleName);
+                        user.setLastName(lastName);
+                        user.setGender(gender);
+                        user.setDob(dob);
+                        user.setCity(city);
+                        user.setEmailId(emailId);
+                        user.setPhoneNo(mobileNo);
+                        boolean isInserted = userTable.insertData(user);
                         showToast(isInserted);
                         dialog.dismiss();
                         setResult(1);
@@ -301,7 +332,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
             et_emailId.setEnabled(true);
             et_moblileNo.setEnabled(true);
             setDateButton.setEnabled(true);
-            radioGenButton.setEnabled(true);
+            radioMaleButton.setEnabled(true);
             radioFemaleButton.setEnabled(true);
             spinner.setEnabled(true);
             updateButton.setVisibility(View.VISIBLE);

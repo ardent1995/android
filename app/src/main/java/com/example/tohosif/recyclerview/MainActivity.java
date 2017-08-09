@@ -22,14 +22,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tohosif.layout.MyAdapter;
-import com.example.tohosif.layout.RegisterActivity;
-import com.example.tohosif.layout.Tab1;
-import com.example.tohosif.layout.Tab2;
-import com.example.tohosif.layout.Tab3;
-import com.example.tohosif.layout.UserFromDatabase;
-
-import java.util.ArrayList;
+import com.example.tohosif.db.DatabaseHelper;
+import com.example.tohosif.fragment.MyAdapter;
+import com.example.tohosif.fragment.RegisterAndUpdateActivity;
+import com.example.tohosif.fragment.Tab1;
+import com.example.tohosif.fragment.Tab2;
+import com.example.tohosif.fragment.Tab3;
+import com.example.tohosif.model.UserFromDatabase;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, MyAdapter.CallbackInterface {
     DatabaseHelper myDb;
@@ -39,6 +38,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private FragmentRefreshListener fragmentRefreshListener;
+
+    public FragmentRefreshListener getFragmentRefreshListener() {
+        return fragmentRefreshListener;
+    }
+
+    public void setFragmentRefreshListener(FragmentRefreshListener fragmentRefreshListener) {
+        this.fragmentRefreshListener = fragmentRefreshListener;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onHandleSelection(UserFromDatabase user) {
-        Intent intent = new Intent(this, RegisterActivity.class);
+        Intent intent = new Intent(this, RegisterAndUpdateActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("user", user);
         intent.putExtras(bundle);
@@ -101,10 +109,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
-            Tab1 tab1 = new Tab1();
-            tab1.data = new ArrayList<>();
-            tab1.fetchData();
+
+//                MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+//                Fragment frg = myPagerAdapter.getItem(0);
+//                final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//                ft.detach(frg);
+//                ft.attach(frg);
+//                ft.commit();
+
+            if (getFragmentRefreshListener() != null) {
+                getFragmentRefreshListener().onRefresh();
+            }
+
         }
+    }
+
+    public interface FragmentRefreshListener {
+        void onRefresh();
     }
 
     public static class MyFragment extends Fragment {

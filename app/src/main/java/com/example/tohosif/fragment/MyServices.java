@@ -1,9 +1,8 @@
-package com.example.tohosif.layout;
+package com.example.tohosif.fragment;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 

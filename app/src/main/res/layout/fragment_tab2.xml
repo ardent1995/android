@@ -2,20 +2,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.tohosif.layout.Tab2"
+    android:gravity="center"
     android:orientation="vertical"
-    android:gravity="center">
+    tools:context="com.example.tohosif.fragment.Tab2">
 
     <Button
-        android:textAllCaps="false"
+        android:id="@+id/Startbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Service"
-        android:id="@+id/Startbtn"/>
+        android:textAllCaps="false" />
     <Button
-        android:textAllCaps="false"
+        android:id="@+id/stopbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stop Service"
-        android:id="@+id/stopbtn"/>
+        android:textAllCaps="false" />
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.example.tohosif.layout;
+package com.example.tohosif.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +10,12 @@ import java.io.Serializable;
  */
 
 public class User implements Serializable {
-    private String firstName, middleName, lastName, gender, city, emailId, phoneNo;
+    protected String firstName, middleName, lastName, gender, city, emailId, phoneNo;
+    protected int iconId;
+
+    public User() {
+
+    }
 
     public User(JSONObject jsonObject) {
         try {
@@ -80,6 +85,14 @@ public class User implements Serializable {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
     }
 
     public String getDetails() {

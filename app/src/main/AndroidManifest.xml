@@ -28,10 +28,10 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.example.tohosif.layout.MyServices" />
+        <service android:name="com.example.tohosif.fragment.MyServices" />
 
-        <activity android:name="com.example.tohosif.layout.ItemDetailsActivity" />
-        <activity android:name="com.example.tohosif.layout.RegisterActivity">
+        <activity android:name="com.example.tohosif.fragment.ItemDetailsActivity" />
+        <activity android:name="com.example.tohosif.fragment.RegisterAndUpdateActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

@@ -1,9 +1,7 @@
-package com.example.tohosif.layout;
+package com.example.tohosif.fragment;
 
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -13,13 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.tohosif.recyclerview.DatabaseHelper;
+import com.example.tohosif.db.DatabaseHelper;
+import com.example.tohosif.db.UserTable;
+import com.example.tohosif.model.UserFromDatabase;
+import com.example.tohosif.recyclerview.MainActivity;
 import com.example.tohosif.recyclerview.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.example.tohosif.recyclerview.TableDataContract.TableInfo;
 
 
 /**
@@ -28,6 +27,7 @@ import static com.example.tohosif.recyclerview.TableDataContract.TableInfo;
 public class Tab1 extends Fragment {
 
     public DatabaseHelper db;
+    public UserTable userTable;
     public MyAdapter adapter;
     public List<UserFromDatabase> data;
     private RecyclerView recyclerView;
@@ -48,6 +48,7 @@ public class Tab1 extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
+        db = new DatabaseHelper(getActivity());
         data = new ArrayList<>();
         fetchData();
 
@@ -55,8 +56,16 @@ public class Tab1 extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent in = new Intent(getActivity(), RegisterActivity.class);
+                Intent in = new Intent(getActivity(), RegisterAndUpdateActivity.class);
                 startActivityForResult(in, 1);
+            }
+        });
+
+        ((MainActivity) getActivity()).setFragmentRefreshListener(new MainActivity.FragmentRefreshListener() {
+            @Override
+            public void onRefresh() {
+                data.clear();
+                fetchData();
             }
         });
 
@@ -67,23 +76,17 @@ public class Tab1 extends Fragment {
     }
 
     public void fetchData() {
-        db = new DatabaseHelper(getActivity());
         try {
             db.createDataBase();
             db.openDataBase();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        SQLiteDatabase sd = db.getReadableDatabase();
-        Cursor cursor = sd.query(TableInfo.TABLE_NAME, null, null, null, null, null, null);
-        while (cursor.moveToNext()) {
-            data.add(new UserFromDatabase(cursor.getInt(cursor.getColumnIndex(TableInfo.ID)), cursor.getString(cursor.getColumnIndex(TableInfo.FIRST_NAME)), cursor.getString(cursor.getColumnIndex(TableInfo.MIDDLE_NAME)),
-                    cursor.getString(cursor.getColumnIndex(TableInfo.LAST_NAME)), cursor.getString(cursor.getColumnIndex(TableInfo.GENDER)), cursor.getString(cursor.getColumnIndex(TableInfo.DOB)), cursor.getString(cursor.getColumnIndex(TableInfo.CITY)),
-                    cursor.getString(cursor.getColumnIndex(TableInfo.EMAIL_ID)), cursor.getString(cursor.getColumnIndex(TableInfo.PHONE_NO))));
-        }
-        adapter = new MyAdapter(getActivity(), data, db);
+        userTable = new UserTable(db);
+        data = userTable.getUserFromDatabaseList();
+
+        adapter = new MyAdapter(getActivity(), data, userTable);
         recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     @Override

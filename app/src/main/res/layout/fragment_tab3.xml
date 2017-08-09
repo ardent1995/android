@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.tohosif.layout.Tab3">
+    tools:context="com.example.tohosif.fragment.Tab3">
 
     <!-- TODO: Update blank fragment layout -->
     <Button

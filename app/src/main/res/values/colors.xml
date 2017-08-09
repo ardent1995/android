@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="buttondefault">#2ECC71</color>
     <color name="buttonpressed">#F0F3F4</color>
+    <color name="transparent">#00000000</color>
+    <color name="recyclerview_item_default">#3498DB</color>
 </resources>
