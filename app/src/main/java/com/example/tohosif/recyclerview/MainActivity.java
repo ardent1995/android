@@ -77,7 +77,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(this, myList[position] + " was selected", Toast.LENGTH_LONG).show();
+        if (position == 0) {
+            Intent intent = new Intent(this, WebviewActivity.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, myList[position] + " was selected", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
