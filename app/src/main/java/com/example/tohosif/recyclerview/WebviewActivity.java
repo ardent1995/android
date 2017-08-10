@@ -38,6 +38,9 @@ public class WebviewActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
+                webView.loadUrl("javascript:(function(){document.getElementsByClassName('c-site-header js-site-header')[0].style.display='none';" +
+                        "document.getElementsByClassName('c-site-footer__top')[0].children[0].children[0].children[1].style.display='none';})()");
+
                 progressBar.setVisibility(View.VISIBLE);
                 progressBar.setProgress(newProgress);
 
